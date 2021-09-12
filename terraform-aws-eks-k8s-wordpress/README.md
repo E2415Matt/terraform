@@ -116,5 +116,5 @@ $ terraform apply --auto-approve
 
 7- clear all resources
 
-# when finished with the task please go to same folders in reverse chronoligal order where you have used terraform apply command and use terraform destroy command to arease resources so that no extra cost occured
+# when finished with the task please go to same folders in reverse chronoligal order where you have used terraform apply command and use terraform destroy command to arease resources in order to avoid unnecessary extra cost
 $ terraform destroy
