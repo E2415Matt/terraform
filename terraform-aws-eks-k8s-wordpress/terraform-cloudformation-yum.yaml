@@ -3,7 +3,7 @@ Description: |
   This template creates an intance (amazon linux 2 (centos) operating system, t2.micro, in London region) with Terraform on SSH port "22".
 Parameters:
   KeyName:
-    Description: aws3-london.pem # Please choose your SSH key file
+    Description: <your pem file name> # Please choose your SSH key file
     Type: AWS::EC2::KeyPair::KeyName
 Resources:
   myEC2Instance:

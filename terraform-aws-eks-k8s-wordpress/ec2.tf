@@ -10,7 +10,7 @@ module "ec2_instance" {
   
   ami                    = "ami-0dbec48abfe298cab"
   instance_type          = "t2.micro"
-  key_name               = "aws3-london"
+  key_name               = "<name of your pem file>"
   monitoring             = true
   vpc_security_group_ids = ["sg-05ab0d02b04a40b1c"]
   subnet_id              = "subnet-a65a3fdc"
