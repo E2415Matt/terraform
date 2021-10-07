@@ -1,3 +1,13 @@
+# most organisations use their own scripts from github or bitbucket 
+# or they use their private repos to pull images to run their custamized jenkins
+# therefore part of this script commented out 
+# these commented out parts show how you can install jenkins from public repos
+# so that you can see options for both centos and ubuntu setup
+# in case you are installing the jenkins for the first time
+# and you do not need to have customised jenkins
+
+
+# public cloud provider
 terraform {
   required_providers {
     aws = {
@@ -7,16 +17,17 @@ terraform {
   }
 }
 
-# Configure the AWS Provider
+# configure the aws provider region
 provider "aws" {
   region = "eu-west-2"
 }
 
-# Create a VPC
+# create a vpc
 resource "aws_vpc" "jenkins" {
   cidr_block = "10.0.0.0/16"
 }
 
+# chose operating system for jenkins instance
 data "aws_ami" "amazon-linux-2" {
  most_recent = true
 
@@ -45,6 +56,7 @@ data "aws_ami" "amazon-linux-2" {
 #  owners = ["123456789012"] # Canonical
 #}
 
+# create instance and determine size of the server
 resource "aws_instance" "jenkins" {
   ami             = data.aws_ami.amazon-linux-2.id
   instance_type   = "t2.micro"
@@ -145,12 +157,13 @@ resource "aws_instance" "jenkins" {
     "Terraform" = "true"
   }
 }
-
+# set open ingress ports rules 
 variable "ingressrules" {
   type    = list(number)
   default = [80, 443, 22]
 }
 
+# launch security group of the instance
 resource "aws_security_group" "jenkins" {
   name        = "Jenkins - Allow web traffic"
   description = "Allow ssh and standard http/https ports inbound and everything outbound"
