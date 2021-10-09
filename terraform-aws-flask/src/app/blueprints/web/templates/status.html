@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="<please type your name here>">
+    <meta name="generator" content="Jekyll v3.8.5">
+    <title>terraform-aws-flask</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/sticky-footer/">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+              font-size: 3.5rem;
+            }
+        }
+
+        .container {
+            width: auto;
+            max-width: 720px;
+            padding: 0 15px;
+        }
+
+        .footer {
+            background-color: #f5f5f5;
+        }
+    </style>
+
+  </head>
+
+  <body class="d-flex flex-column h-100">
+    <!-- Begin page content -->
+    <main role="main" class="flex-shrink-0">
+      <div class="container">
+        <h1 class="mt-5">Status Page for {{ items['wiki'].term }}</h1>
+        <p class="lead">Wikipedia scraping could take a few seconds to complete...</p>
+        <hr>
+          <div class="status">
+            <div class="alert alert-primary" role="alert">
+              Scraping! — Task "status" messages will appear below ...
+                <span class="spinner-border spinner-border-sm float-right" style="margin-top: 3px;" role="status"></span>
+            </div>
+          </div>
+      </div>
+    </main>
+    <footer class="footer mt-auto py-3">
+      <div class="container">
+        <span class="text-muted">Version 0.1.0 · Release 7/30/2019</span>
+        <span class="text-muted float-right"><a href="/">Home</a></span>
+      </div>
+    </footer>
+  </body>
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script>
+        (function() {
+          let messages = [];
+          let status = $('.status'),
+            poll = function() {
+              $.ajax({
+                url: '/api/poll/{{ items['wiki'].term }}',
+                dataType: 'json',
+                type: 'get',
+                success: function(data) {
+                    if (data['poll']['status'] === 'Complete') {
+                        clearInterval(pollInterval);
+                        status.empty();
+                        status.append(
+                            "<div class=\"alert alert-success alert-dismissible fade show\" role=\"alert\">\n" +
+                            "<strong>Done!</strong> Here are all links parsed from {{ items['wiki'].term }}'s Wiki...\n" +
+                            "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">\n" +
+                            "<span aria-hidden=\"true\">&times;</span>\n" +
+                            "</button>\n" +
+                            "</div>"
+                        )
+                    } else {
+                        for (let i = 0; i < data['poll']['messages'].length; i++) {
+                            if ( !messages.includes(data['poll']['messages'][i]) ) {
+                                messages.push(data['poll']['messages'][i]);
+                                status.append(
+                                    "<p>" + data['poll']['messages'][i] + "</p>"
+                                );
+                            }
+                        }
+                    }
+                },
+                error: function() { // error logging
+                  console.log('Error!');
+                }
+              });
+            },
+            pollInterval = setInterval(function() { // run function every 2000 ms
+              poll();
+              }, 1000);
+            poll(); // also run function on init
+        })();
+    </script>
+
+</html>
