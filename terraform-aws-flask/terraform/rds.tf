@@ -32,7 +32,7 @@ resource "aws_security_group" "rds-db-sg" {
 
 # create the RDS instance
 resource "aws_db_instance" "fp-rds" {
-  allocated_storage           = 5
+  allocated_storage           = 20
   storage_type                = "gp2"
   engine                      = "postgres"
   engine_version              = "11"
