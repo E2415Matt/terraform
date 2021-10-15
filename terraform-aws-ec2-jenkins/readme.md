@@ -9,13 +9,13 @@
 ## stage 2 - terraform script for:
 ### main: launch 1 vpc, 1 public subnet, ec2, security group, machine image, etc
 ### network: internet gateway, cidr, route table, associate, etc
-### s3: data of s3 bucket arn, s3 endpoint, etc - to do
+### s3: data of s3 bucket arn, s3 endpoint, etc
 ### variables: ip range, etc
-### inline script: instalL & enable docker, install docker-compose, install jenkins, install aws cli
+### user data: instalL & enable docker, install docker-compose, install jenkins, install aws cli, clone repo from bitbucket, and run docker compose file, copy backup file from s3 bucket and paste it to jenkins container's volume, etc
 ### terraform: copy jenkins backup data from s3 bucket (jenkins-daily-backup-files) to volume of jenkins container on ec2
-### output: ec2 dns name or ec2 public ip address, etc
+### output: ec2 public ip address, etc
 
-## stage 3 - copy and paste ec2 dns name to internet browser, and enter jenkins credentials
+## stage 3 - copy and paste <ec2 ip address:8080> to internet browser, and enter jenkins credentials
 
 # Create EC2 and install docker, docker-compose and jenkins with terraform on AWS
 

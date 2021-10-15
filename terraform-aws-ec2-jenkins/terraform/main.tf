@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 3.0"
     }
+#     docker = {
+#       source  = "kreuzwerker/docker"
+#       version = "2.15.0"
+#     }
   }
 }
 
@@ -49,40 +53,45 @@ resource "aws_instance" "jenkins" {
   instance_type   = "t2.2xlarge"
   security_groups = [aws_security_group.jenkins.name]
   key_name        = "aws3-london"
+  user_data = "${file("user-data-jenkins.sh")}"
 
 # Install dependencies + jenkins (for ubuntu)
-provisioner "remote-exec" {
-  inline = [
-    "sudo apt-get update -y",
-    "sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common",
-    "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
-    "sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
-    "sudo apt-get update -y",
-    "sudo apt-get install -y apt-transport-https",
-    "sudo apt-get install -y ca-certificates",
-    "sudo apt-get install -y curl",
-    "sudo apt-get install -y unzip",
-    "sudo apt-get install -y wget",
-    "sudo apt-get install -y gnupg",
-    "sudo apt-get install -y lsb-release",
-    "curl -fsSL https://download.docker.com/linux/ubuntu/gpg",
-    "sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg",
-    "echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' & sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
-    "sudo apt-get update -y",
-    "sudo apt-get install -y docker-ce docker-ce-cli containerd.io",
-    "sudo systemctl start docker",
-    "sudo systemctl enable docker",
-    "sudo usermod -a -G docker ubuntu",
-    "sudo curl -L 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)' -o /usr/local/bin/docker-compose",
-    "sudo chmod +x /usr/local/bin/docker-compose",
-    "sudo curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip'",
-    "unzip awscliv2.zip",
-    "sudo ./aws/install",
-    "sudo docker run -d -p 8080:8080 --name=jenkins jenkins/jenkins:2.315",
-  #  "sudo docker run -d -p 8080:8080 --name=jenkins jenkins/jenkins:2.315 -g 'daemon off;'",
-  # "sudo docker-compose up -d"
-  ]
-}
+# provisioner "remote-exec" {
+#   inline = [
+#     "sudo apt-get update -y",
+#     "sudo apt-get install -y curl",
+#     "sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common",
+#     "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
+#     "sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
+#     "sudo apt-get update -y",
+#     "sudo apt-get install -y apt-transport-https",
+#     "sudo apt-get install -y ca-certificates",
+#     "sudo apt-get install -y unzip",
+#     "sudo apt-get install -y wget",
+#     "sudo apt-get install -y gnupg",
+#     "sudo apt-get install -y lsb-release",
+#     "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg",
+#     "sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg",
+#     "echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable'",
+#     "sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
+#     "sudo apt-get update -y",
+#     "sudo apt install docker.io",
+#     # "sudo apt-get install -y docker-ce",
+#     "sudo apt-get install -y docker-ce-cli",
+#     "sudo apt-get install -y containerd.io",
+#     "sudo systemctl start docker",
+#     "sudo systemctl enable docker",
+#     "sudo usermod -a -G docker ubuntu",
+#     "sudo curl -L 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)' -o /usr/local/bin/docker-compose",
+#     "sudo chmod +x /usr/local/bin/docker-compose",
+#     "sudo curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip'",
+#     "unzip awscliv2.zip",
+#     "sudo ./aws/install",
+#     "sudo docker run -d -p 8080:8080 --name=jenkins jenkins/jenkins:2.315"
+#   #  "sudo docker run -d -p 8080:8080 --name=jenkins jenkins/jenkins:2.315 -g 'daemon off;'",
+#   # "sudo docker-compose up -d"
+#   ]
+# }
 #    "sudo apt update -y",
 #    "sudo apt install --yes wget htop default-jre build-essential make python-minimal",
 #    "curl https://get.docker.com | sh",
@@ -178,3 +187,5 @@ resource "aws_security_group" "jenkins" {
     "Terraform" = "true"
   }
 }
+
+# launch iam role for the instance so that it can connect and restore backup data from s3 bucket
